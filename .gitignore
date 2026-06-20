@@ -12,3 +12,6 @@ env/
 
 # Code review graph
 .code-review-graph/
+
+# Asset zips
+pietra3x2.zip
