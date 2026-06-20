@@ -1,34 +1,34 @@
 # Floor Tile Pagination Generator
 
-Gerador de paginação de piso por linha de comando. O programa coleta, de forma
-interativa no console, as imagens de cada posição da grade e as medidas físicas
-do piso, e compõe uma única imagem PNG com o rejunte proporcional aplicado entre
-e ao redor das peças.
+A command-line floor tile pagination generator. The program interactively
+collects the image for each grid position plus the floor's physical measurements,
+and composes a single PNG image with proportional grout applied between and
+around the tiles.
 
-> ⚠️ Protótipo. O foco é um resultado funcional e rápido de iterar; não há suíte
-> de testes automatizados (veja `.specify/memory/constitution.md`).
+> ⚠️ Prototype. The focus is a working result that is fast to iterate on; there
+> is no automated test suite (see `.specify/memory/constitution.md`).
 
-## Como funciona
+## How it works
 
-- A imagem da posição `1x1` é a **referência**: o tamanho dela em pixels define o
-  tamanho da célula. As demais imagens são redimensionadas para esse tamanho.
-- O **ratio** (proporção pixel ↔ medida física) é `pixels da imagem ÷ tamanho
-  físico do piso`, calculado por eixo.
-- O **rejunte em pixels** é `tamanho do rejunte × ratio`, arredondado.
-- O tamanho final por eixo é `n × (célula_px + rejunte_px)`, onde `n` é o número
-  de peças naquele eixo. O rejunte é desenhado como o fundo do canvas (entre as
-  peças e na borda externa).
+- The `1x1` position image is the **reference**: its pixel size defines the cell
+  size. All other images are resized to that size.
+- The **ratio** (pixel ↔ physical measure proportion) is `image pixels ÷ physical
+  tile size`, computed per axis.
+- The **grout in pixels** is `grout size × ratio`, rounded.
+- The final size per axis is `n × (cell_px + grout_px)`, where `n` is the number
+  of tiles on that axis. The grout is drawn as the canvas background (between the
+  tiles and on the outer border).
 
-### Exemplos
+### Examples
 
-| Unidade | Grade | Piso | Imagem | Rejunte | ratio | rejunte_px | Saída |
-|---------|-------|------|--------|---------|-------|-----------|-------|
-| mm | 2x2 | 1000×1000 | 150×150 | 1,5 | 0.15 | round(0.225) = 0 | 300×300 |
+| Unit | Grid | Tile | Image | Grout | ratio | grout_px | Output |
+|------|------|------|-------|-------|-------|----------|--------|
+| mm | 2x2 | 1000×1000 | 150×150 | 1.5 | 0.15 | round(0.225) = 0 | 300×300 |
 | cm | 2x2 | 100×100 | 150×150 | 2 | 1.5 | round(3.0) = 3 | 306×306 |
 
-Quando o rejunte arredonda para 0, as peças ficam encostadas (sem espaçamento).
+When the grout rounds to 0, the tiles sit edge to edge (no spacing).
 
-## Requisitos
+## Requirements
 
 - Python 3.10+
 - Pillow
@@ -37,28 +37,29 @@ Quando o rejunte arredonda para 0, as peças ficam encostadas (sem espaçamento)
 pip install -r requirements.txt
 ```
 
-## Uso
+## Usage
 
 ```bash
 python main.py
 ```
 
-O programa pergunta, em sequência:
+The program asks, in sequence:
 
-1. **Unidade de medida**: `centimeters`, `meters` ou `millimeters`
-2. **Tamanho da grade**: `2x2`, `2x3`, `3x2` ou `3x3` (formato `linhas x colunas`)
-3. **Caminho da imagem** de cada posição (`png`, `jpg` ou `jpeg`), na ordem de
-   leitura (`1x1`, `1x2`, …)
-4. **Altura** e **largura** do piso (na unidade escolhida)
-5. **Espessura do rejunte** (na unidade escolhida)
-6. **Cor do rejunte** em hexadecimal `#RRGGBB` — *solicitada apenas se o rejunte
-   for maior que zero*
-7. **Caminho do arquivo PNG** de saída
+1. **Unit of measure**: `centimeters`, `meters` or `millimeters`
+2. **Grid size**: `2x2`, `2x3`, `3x2` or `3x3` (format `rows x columns`)
+3. **Image path** for each position (`png`, `jpg` or `jpeg`), in reading order
+   (`1x1`, `1x2`, …)
+4. **Height** and **width** of the tile (in the chosen unit)
+5. **Grout thickness** (in the chosen unit)
+6. **Grout color** in hexadecimal `#RRGGBB` — *only requested if the grout is
+   greater than zero*
+7. **Output PNG file path**
 
-Em seguida é exibido um resumo e pedida a confirmação (`yes`/`no`). Apenas com
-`yes` o arquivo é gerado (sobrescreve se já existir); com `no` nada é gravado.
+A summary is then displayed and confirmation is requested (`yes`/`no`). Only with
+`yes` is the file generated (overwrites if it already exists); with `no` nothing
+is written.
 
-### Exemplo de sessão
+### Sample session
 
 ```
 Floor Tile Pagination Generator
@@ -84,22 +85,22 @@ Generate this layout? (yes/no): yes
 Saved to out_cm.png
 ```
 
-## Validação
+## Validation
 
-Toda entrada inválida é rejeitada com mensagem e re-perguntada (sem encerrar o
-programa): grade fora do conjunto permitido, unidade desconhecida, formato de
-imagem diferente de png/jpg/jpeg, arquivo inexistente, número inválido e cor fora
-do padrão `#RRGGBB`.
+Every invalid input is rejected with a message and re-prompted (without exiting
+the program): a grid outside the allowed set, an unknown unit, an image format
+other than png/jpg/jpeg, a non-existent file, an invalid number, and a color
+outside the `#RRGGBB` pattern.
 
-## Estrutura
+## Structure
 
 ```
-main.py            # Fluxo de console: prompts, validação, resumo e confirmação
-pagination.py      # Lógica de composição: ratio, rejunte em pixels e montagem (Pillow)
+main.py            # Console flow: prompts, validation, summary and confirmation
+pagination.py      # Composition logic: ratio, grout in pixels and assembly (Pillow)
 requirements.txt   # Pillow
-specs/             # Especificação, plano e tarefas (Spec Kit)
+specs/             # Specification, plan and tasks (Spec Kit)
 ```
 
-## Licença
+## License
 
-Veja [LICENSE](./LICENSE).
+See [LICENSE](./LICENSE).
